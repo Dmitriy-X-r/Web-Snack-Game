@@ -1,0 +1,81 @@
+.game {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    height: 100%;
+}
+
+.game.started .board {
+    border-color: rgb(82, 205, 50);
+}
+
+.game.paused .board {
+    border-color: rgb(233, 158, 6);
+}
+
+.game.stopped .board {
+    border-color: rgb(233, 6, 6);
+}
+
+
+.value {
+    color: grey;
+    font-size: 34px;
+}
+
+.game.started .value {
+    color: rgb(82, 205, 50);
+}
+
+.game.paused .value {
+    color: rgb(233, 158, 6);
+}
+
+.game.stopped .value {
+    color: rgb(233, 6, 6);
+}
+
+.game.started .snake {
+    background-color: rgb(82, 205, 50);
+}
+
+.board {
+    display: grid;
+    grid-template-rows: repeat(20, 1fr);
+    grid-template-columns: repeat(20, 1fr);
+    height: 600px;
+    width: 600px;
+    border: rgb(200, 200, 200) 1px solid;
+    margin: 0 0 20px 0;
+}
+
+.board .cell {
+    border: rgb(247, 247, 247) 1px solid;
+}
+
+.board .cell.snake {
+    background-color: rgb(40, 98, 22);
+}
+
+.board .cell.food {
+    background-color: rgb(98, 22, 22);
+}
+
+button.start {
+    border: 2px solid green;
+    color: green;
+    background: transparent;
+}
+
+button.pause {
+    border: 2px solid orange;
+    color: orange;
+    background: transparent;
+    margin: 0 100px 0;
+}
+
+button.stop {
+    border: 2px solid red;
+    color: red;
+    background: transparent;
+}
