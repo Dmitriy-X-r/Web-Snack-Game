@@ -10,6 +10,10 @@ function init() {
     window.addEventListener('keydown', game.move);
 }
 
+function getRandomNumber(min, max) {
+    return Math.trunc(Math.random() * (max - min) + min);
+}
+
 const GAME_STATUS_STARTED = 'started';
 const GAME_STATUS_PAUSED = 'paused';
 const GAME_STATUS_STOPPED = 'stopped';
@@ -44,10 +48,10 @@ const game = {
         game.setGameStatus(GAME_STATUS_STOPPED);
     },
 
-    move(event){
+    move(event) {
         let direction = null;
 
-        switch(event.keyCode){
+        switch (event.keyCode) {
             case 38:
                 direction = SNAKE_DIRECTION_UP;
                 break;
@@ -66,7 +70,17 @@ const game = {
 
         snake.setDirection(direction);
         const nextPosition = snake.getNextPosition();
-        snake.setPosition(nextPosition);
+
+        const foundFood = food.foundPosition(nextPosition);
+        if (foundFood !== -1) {
+            snake.setPosition(nextPosition, false);
+            food.removeItem(foundFood);
+            food.generateItem();
+            food.render();
+        } else {
+            snake.setPosition(nextPosition);
+        }
+
         snake.render();
     },
 
@@ -124,21 +138,21 @@ const snake = {
         { top: 0, left: 2 },
     ],
 
-    setDirection(direction){
-        if(this.direction === SNAKE_DIRECTION_DOWN && direction === SNAKE_DIRECTION_UP
+    setDirection(direction) {
+        if (this.direction === SNAKE_DIRECTION_DOWN && direction === SNAKE_DIRECTION_UP
             || this.direction === SNAKE_DIRECTION_UP && direction === SNAKE_DIRECTION_DOWN
             || this.direction === SNAKE_DIRECTION_RIGHT && direction === SNAKE_DIRECTION_LEFT
-            || this.direction === SNAKE_DIRECTION_LEFT && direction === SNAKE_DIRECTION_RIGHT){
-                return;
-            }
+            || this.direction === SNAKE_DIRECTION_LEFT && direction === SNAKE_DIRECTION_RIGHT) {
+            return;
+        }
 
         this.direction = direction;
     },
 
-    getNextPosition(){
-        const position = {... this.parts[this.parts.length-1]};
+    getNextPosition() {
+        const position = { ... this.parts[this.parts.length - 1] };
 
-        switch(this.direction){
+        switch (this.direction) {
             case SNAKE_DIRECTION_UP:
                 position.top -= 1;
                 break;
@@ -153,25 +167,25 @@ const snake = {
                 break
         }
 
-        if(position.top === -1){
+        if (position.top === -1) {
             position.top = config.size - 1;
         }
-        else if(position.top > config.size - 1){
+        else if (position.top > config.size - 1) {
             position.top = 0;
         }
 
-        if(position.left === -1){
+        if (position.left === -1) {
             position.left = config.size - 1;
         }
-        else if(position.left > config.size - 1){
+        else if (position.left > config.size - 1) {
             position.left = 0;
         }
 
         return position;
     },
 
-    setPosition(position, shift = true){
-        if(shift){
+    setPosition(position, shift = true) {
+        if (shift) {
             this.parts.shift();
         }
         this.parts.push(position);
@@ -184,11 +198,42 @@ const snake = {
 };
 
 const food = {
-    items:[
-        {top: 5, left: 5}
+    items: [
+        { top: 5, left: 5 }
     ],
 
-    render(){
+    foundPosition(snakePosition) {
+        const comparerFunction = function (item) {
+            return item.top === snakePosition.top && item.left === snakePosition.left;
+        };
+
+        // for (let item of this.items) {
+        //     if (comparerFunction(item)) {
+        //         return true;
+        //     }
+        // }
+
+        // return false;
+
+        return this.items.findIndex(comparerFunction);
+    },
+
+    removeItem(foundPosition) {
+        this.items.splice(foundPosition, 1);
+    },
+
+    generateItem() {
+        const newItem = {
+            top: getRandomNumber(0, config.size - 1),
+            left: getRandomNumber(0, config.size - 1)
+        };
+
+        // добавить проверку нет ли у нас такого элемента
+
+        this.items.push(newItem);
+    },
+
+    render() {
         cell.renderClass(this.items, 'food');
     }
 };
