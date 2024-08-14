@@ -46,10 +46,15 @@ const game = {
 
     stop() {
         game.setGameStatus(GAME_STATUS_STOPPED);
+        alert("Вы проиграли");
+        //stopPropagation();
     },
 
     move(event) {
         let direction = null;
+        let counter = document.getElementById('score-value');
+        let count = parseInt(counter.innerHTML);
+
 
         switch (event.keyCode) {
             case 38:
@@ -71,8 +76,14 @@ const game = {
         snake.setDirection(direction);
         const nextPosition = snake.getNextPosition();
 
+        if (snake.checkСollision(nextPosition)) {
+            game.stop();
+        }
+
         const foundFood = food.foundPosition(nextPosition);
         if (foundFood !== -1) {
+            count += 10;
+            counter.innerHTML = count;
             snake.setPosition(nextPosition, false);
             food.removeItem(foundFood);
             food.generateItem();
@@ -137,6 +148,15 @@ const snake = {
         { top: 0, left: 1 },
         { top: 0, left: 2 },
     ],
+
+    checkСollision(headPosition) {
+        for (let part = 0; part < this.parts.length - 1; part++) {
+            if (this.parts[part].top === headPosition.top && this.parts[part].left === headPosition.left) {
+                return true;
+            }
+        }
+        return false;
+    },
 
     setDirection(direction) {
         if (this.direction === SNAKE_DIRECTION_DOWN && direction === SNAKE_DIRECTION_UP
